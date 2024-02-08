@@ -1,0 +1,10 @@
+executable              = ${PATH}/condor/sh/${SHNAME}.sh
+universe                = vanilla
+notification            = never
+priority                = 5
+getenv                  = False
+output                  = ${PATH}/condor/output/${SHNAME}.output
+error                   = ${PATH}/condor/error/${SHNAME}.error
+log                     = ${PATH}/condor/logs/${SHNAME}.log
+request_cpus            = 4
+queue 1

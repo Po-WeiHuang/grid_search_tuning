@@ -1,0 +1,9 @@
+executable              = /data/snoplus3/hunt-stokes/tune_cleaning/condor/sh/${COMBINATION}.sh
+universe                = vanilla
+notification            = never
+priority                = 5
+getenv                  = False
+output                  = /data/snoplus3/hunt-stokes/tune_cleaning/condor/output/${COMBINATION}.output
+error                   = /data/snoplus3/hunt-stokes/tune_cleaning/condor/error/${COMBINATION}.error
+request_cpus            = 1
+queue 1

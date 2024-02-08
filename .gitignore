@@ -1,0 +1,11 @@
+chi2
+condor/error
+condor/logs
+condor/output
+condor/sh
+condor/submit
+condor/macros
+official_plots
+plots
+residuals
+detector_data
