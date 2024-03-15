@@ -4,7 +4,7 @@ from ROOT import RAT
 import argparse
 import os 
 
-def extractAnalysis(parameters, iteration, isotope, FV_CUT, zOffset, ENERGY_LOW, ENERGY_HIGH):
+def extractAnalysis(parameters, iteration, isotope, FV_CUT, zOffset, ENERGY_LOW, ENERGY_HIGH, MC_TRES_FLAG):
     """
     INPUTS: These inputs define the MC file to load in:
 
@@ -24,15 +24,14 @@ def extractAnalysis(parameters, iteration, isotope, FV_CUT, zOffset, ENERGY_LOW,
 
     # OUTPUTS
     residualsRECON = []
+    energyRECON = []
     COUNTER        = 0 
     #iteration = "initial_config"
-    if iteration == "1" and isotope == "Po214":
+    if isotope == "Po214" or "Bi214":
         # Doubled the stats by adding additional file which has {parameters}2.root suffix 
-        fname = f"/data/snoplus3/hunt-stokes/tune_cleaning/MC/{isotope}/{iteration}/{parameters}*.root"
-    elif iteration == "bismsb_comparison":
-        fname = f"/data/snoplus3/hunt-stokes/tune_cleaning/MC/{iteration}/{isotope}/{parameters}.root"
+        fname = f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/MC/{iteration}/{isotope}/{iteration}{isotope}{parameters}.root"
     else:
-        fname          = f"/data/snoplus3/hunt-stokes/tune_cleaning/MC/{isotope}/{iteration}/{parameters}.root"
+        raise Exception("Wrong filename/path, check your [iteration] & [isotope] & [parameters]")
     # fname = f"/data/snoplus3/hunt-stokes/tune_cleaning/MC/{isotope}/{iteration}/{parameters}*.root"
     print(fname)
     # fname          = f"MC/{isotope}/{iteration}/*.root"
@@ -41,7 +40,7 @@ def extractAnalysis(parameters, iteration, isotope, FV_CUT, zOffset, ENERGY_LOW,
     for ientry, _ in rat.dsreader(fname):
         # light path calculator and point3D stuff loaded after ratds constructor
         # timeResCalc = rat.utility().GetTimeResidualCalculator()
-        PMTCalStatus = RAT.DU.Utility.Get().GetPMTCalStatus()
+        PMTCalStatus = RAT.DU.Utility.Get().GetPMTCalStatus()# include PMYs' calibration status for each event
         light_path = rat.utility().GetLightPathCalculator()
         group_velocity = rat.utility().GetGroupVelocity()
         pmt_info = rat.utility().GetPMTInfo()
@@ -53,6 +52,7 @@ def extractAnalysis(parameters, iteration, isotope, FV_CUT, zOffset, ENERGY_LOW,
             continue
 
         #### RECONSTRUCTION INFORMATION EXTRACTED ####
+        # used for mc, note we may have multiple particles in one events in mc(because we know re-trigger in mc truth event)
         reconEvent = ientry.GetEV(0)
         
         # did event get reconstructed correctly?
@@ -70,12 +70,14 @@ def extractAnalysis(parameters, iteration, isotope, FV_CUT, zOffset, ENERGY_LOW,
             continue
         # print("Reconstruction checks PASSED!")
         # reconstruction valid so get reconstructed position and energy
-        reconPosition  = vertex.GetPosition() # returns in PSUP coordinates
+        reconPosition  = vertex.GetPosition() if MC_TRES_FLAG == False else  ientry.GetMC().GetMCParticle(0).GetPosition() # returns in PSUP coordinates
         reconEnergy    = vertex.GetEnergy()        
-        reconEventTime = vertex.GetTime()
+        reconEventTime = vertex.GetTime() if MC_TRES_FLAG == False else  ientry.GetMCEV(0).GetGTTime()
         
         # apply AV offset to position
+        ## transfer reconPosition(TVector3D object) to  Point3D object in psub coordinate 
         event_point = RAT.DU.Point3D(psup_system_id, reconPosition)
+        # change event point to AV coordinate
         event_point.SetCoordinateSystem(av_system_id)
         if event_point.Mag() > FV_CUT:
             continue
@@ -101,14 +103,15 @@ def extractAnalysis(parameters, iteration, isotope, FV_CUT, zOffset, ENERGY_LOW,
             av_distance = light_path.GetDistInAV()
             water_distance = light_path.GetDistInWater()
             transit_time = group_velocity.CalcByDistance(inner_av_distance, av_distance, water_distance)
-            residual_recon = pmt.GetTime() - transit_time - reconEventTime
+            residual_recon = pmt.GetTime() - transit_time - reconEventTime if MC_TRES_FLAG == False else pmt.GetTime() - transit_time - 390 + reconEventTime
             
             residualsRECON.append(residual_recon)
+        energyRECON.append(reconEnergy)
         
         COUNTER += 1
         if COUNTER % 1 == 0:
             print("COMPLETED {} / {}".format(COUNTER, ds.GetEntryCount()))
-    return residualsRECON
+    return residualsRECON, energyRECON
             
 if __name__ == "__main__":
 
@@ -130,6 +133,7 @@ if __name__ == "__main__":
     parser.add_argument("E_HIGH", type=float)
     parser.add_argument("domain_low", type=float)
     parser.add_argument("domain_high", type=float)
+    parser.add_argument("MC_tres_flag", default=True, help="if True: plot time residual in mc truth position",type=bool)
     args = parser.parse_args()
     
     # convert inputs to rounded floats
@@ -138,20 +142,22 @@ if __name__ == "__main__":
     # A1 = round(float(args.A1), 3)
     # A2 = round(float(args.A2), 3)
     # parameters = f"{T1}_{T2}_{A1}_{A2}"
-
-    residuals  = extractAnalysis(args.parameters, args.iteration, args.isotope, args.FV_CUT, args.zOffset, args.E_LOW, args.E_HIGH)
+    print(f"MCFLAG: {args.MC_tres_flag}")
+    residuals, energy  = extractAnalysis(args.parameters, args.iteration, args.isotope, args.FV_CUT, args.zOffset, args.E_LOW, args.E_HIGH, args.MC_tres_flag)
     
-    if args.iteration == "bismsb_comparison":
-        np.save(f"/data/snoplus3/hunt-stokes/tune_cleaning/residuals/{args.iteration}/{args.isotope}/{args.parameters}.npy", residuals)
+    if args.MC_tres_flag == True:
+        np.save(f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.iteration}/{args.isotope}/MC{args.parameters}.npy", residuals)
     else:
-        np.save(f"/data/snoplus3/hunt-stokes/tune_cleaning/residuals/{args.isotope}/{args.iteration}/{args.parameters}.npy", residuals)
-    print("saved residuals!", f"/data/snoplus3/hunt-stokes/tune_cleaning/residuals/{args.isotope}/{args.iteration}/{args.parameters}.npy")
+        np.save(f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.iteration}/{args.isotope}/{args.parameters}.npy", residuals)
+    #np.save(f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.iteration}/{args.isotope}/{args.parameters}_energy.npy", energy)
+    print("saved residuals!", f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.isotope}/{args.iteration}/{args.parameters}.npy")
+    print("saved energy!",    f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.isotope}/{args.iteration}/{args.parameters}.npy")
     # np.save(f"{args.isotope}214_MC_residuals/{args.iteration}/{parameters}.npy", residuals)
     
     # COMPUTE THE SQUARED DIFFERENCES BETWEEN THIS AND THE DATA
     #binning = np.arange(args.domain_low, args.domain_high, 1)
     # actually due to changing normalisation conditions, need to bin over the entire range
-
+    '''
     if args.iteration != "bismsb_comparsion":
         binning = np.arange(-5, 250, 1)
         if args.isotope == "init_Po214" or args.isotope == "init_Bi214":
@@ -174,3 +180,4 @@ if __name__ == "__main__":
         # save this number
         np.save(f"/data/snoplus3/hunt-stokes/tune_cleaning/chi2/{args.isotope}/{args.iteration}/{args.parameters}.npy", diffs)
         # np.save(f"{args.isotope}214_chi2/{args.iteration}/{parameters}.npy", diffs)
+    '''
