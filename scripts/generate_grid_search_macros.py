@@ -14,9 +14,9 @@ def bisMSB_simulation():
     path      = "/data/snoplus2/weiiiii/BiPo214_tune_cleaning"
     iteration = args.iteration
     NUM_EVS = 10000
-    runid = 352930
+    runid = 354801
     isotope = args.isotope
-    Bis_Concentation = 1.7# 1.7 for batch3, 2.2 for batch4
+    Bis_Concentation = 0.1 # 1.7 for batch3, 2.2 for batch4
     BisABSLENGTH_SCALE = (Bis_Concentation/5.)*0.77
 
     # load in the default macro text 

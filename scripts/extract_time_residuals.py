@@ -29,7 +29,7 @@ def extractAnalysis(parameters, iteration, isotope, FV_CUT, zOffset, ENERGY_LOW,
     #iteration = "initial_config"
     if isotope == "Po214" or "Bi214":
         # Doubled the stats by adding additional file which has {parameters}2.root suffix 
-        fname = f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/MC/{iteration}/{isotope}/{iteration}{isotope}{parameters}.root"
+        fname = f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/MC/{iteration}/{isotope}/{isotope}{iteration}{parameters}.root"
     else:
         raise Exception("Wrong filename/path, check your [iteration] & [isotope] & [parameters]")
     # fname = f"/data/snoplus3/hunt-stokes/tune_cleaning/MC/{isotope}/{iteration}/{parameters}*.root"
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     parser.add_argument("E_HIGH", type=float)
     parser.add_argument("domain_low", type=float)
     parser.add_argument("domain_high", type=float)
-    parser.add_argument("MC_tres_flag", default=True, help="if True: plot time residual in mc truth position",type=bool)
+    parser.add_argument("--MC_tres_flag", action="store_true",help="if True: plot time residual in mc truth position")
     args = parser.parse_args()
     
     # convert inputs to rounded floats
@@ -149,9 +149,10 @@ if __name__ == "__main__":
         np.save(f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.iteration}/{args.isotope}/MC{args.parameters}.npy", residuals)
     else:
         np.save(f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.iteration}/{args.isotope}/{args.parameters}.npy", residuals)
-    #np.save(f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.iteration}/{args.isotope}/{args.parameters}_energy.npy", energy)
+    np.save(f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.iteration}/{args.isotope}/{args.parameters}_energy.npy", energy)
+
     print("saved residuals!", f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.isotope}/{args.iteration}/{args.parameters}.npy")
-    print("saved energy!",    f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.isotope}/{args.iteration}/{args.parameters}.npy")
+    print("saved energy!",    f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/{args.isotope}/{args.iteration}/{args.parameters}_energy.npy")
     # np.save(f"{args.isotope}214_MC_residuals/{args.iteration}/{parameters}.npy", residuals)
     
     # COMPUTE THE SQUARED DIFFERENCES BETWEEN THIS AND THE DATA
