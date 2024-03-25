@@ -11,10 +11,13 @@ import argparse
 4 component model. Tuning times.
 """
 def bisMSB_simulation():
-    path      = "/data/snoplus3/hunt-stokes/tune_cleaning"
-    iteration = "bismsb_comparison"
+    path      = "/data/snoplus3/weiii/tune_cleaning"
+    iteration = args.iteration
     NUM_EVS = 10000
-    isotope = "Po214"
+    runid = 300960
+    isotope = args.isotope
+    Bis_Concentation = 0.1 # 1.7 for batch3, 2.2 for batch4
+    BisABSLENGTH_SCALE = (Bis_Concentation/5.)*0.77
 
     # load in the default macro text 
     with open(f"{path}/condor/template_macro_{isotope}_bismsb.mac", "r") as infile:
@@ -36,18 +39,19 @@ def bisMSB_simulation():
         A3 = 0.092
         # loop over every combination of variables
         for iConst1 in t1:
-            sum_amps = A1 + A2 + A3
-            t1_rounded  = round(iConst1, 4)
-            t2_rounded  = round(t2, 4)
-            t3_rounded  = round(t3, 4)
-            A1_rounded  = round(A1 /sum_amps , 4)
-            A2_rounded  = round(A2 /sum_amps, 4)
-            A3_rounded  = round(A3 /sum_amps, 4)
-            tr_rounded  = round(tr, 4)
+            sum_amps             = A1 + A2 + A3
+            t1_rounded           = round(iConst1, 4)
+            t2_rounded           = round(t2, 4)
+            t3_rounded           = round(t3, 4)
+            A1_rounded           = round(A1 /sum_amps , 4)
+            A2_rounded           = round(A2 /sum_amps, 4)
+            A3_rounded           = round(A3 /sum_amps, 4)
+            tr_rounded           = round(tr, 4)
+            BisABSLENGTH_rounded = round(BisABSLENGTH_SCALE, 4)
 
-            macName = f"{t1_rounded}"
-            outTextMac = rawTextMac.substitute(T1 = t1_rounded, T2 = t2_rounded, TR = tr_rounded, T3 = t3_rounded, A1 = A1_rounded, A2 = A2_rounded, A3 = A3_rounded, OUT = f"{path}/MC/{iteration}/{isotope}/{macName}")
-            outTextSh = rawTextSh.substitute(NUMEVS = NUM_EVS, MACNAME = macName, PATH=path)
+            macName = f"{isotope}{iteration}{t1_rounded}"
+            outTextMac = rawTextMac.substitute(T1 = t1_rounded, T2 = t2_rounded, TR = tr_rounded, T3 = t3_rounded, A1 = A1_rounded, A2 = A2_rounded, A3 = A3_rounded,BisScale = BisABSLENGTH_rounded, OUT = f"{path}/MC/{iteration}/{isotope}/{macName}")
+            outTextSh = rawTextSh.substitute(RUNID= runid ,NUMEVS = NUM_EVS, MACNAME = macName, PATH=path)
             outTextSubmit = rawTextSubmit.substitute(SHNAME = macName, PATH=path)
 
             # create the files 
@@ -78,19 +82,20 @@ def bisMSB_simulation():
         # loop over every combination of variables
         for iConst1 in t1:
             sum_amps = A4 + A1 + A2 + A3
-            t1_rounded  = round(iConst1, 4)
-            t2_rounded  = round(t2, 4)
-            t3_rounded  = round(t3, 4)
-            t4_rounded  = round(t4, 4)
-            A1_rounded  = round(A1 /sum_amps , 4)
-            A2_rounded  = round(A2 /sum_amps, 4)
-            A3_rounded  = round(A3 /sum_amps, 4)
-            A4_rounded  = round(A4 /sum_amps, 4)
-            tr_rounded  = round(tr, 4)
+            t1_rounded           = round(iConst1, 4)
+            t2_rounded           = round(t2, 4)
+            t3_rounded           = round(t3, 4)
+            t4_rounded           = round(t4, 4)
+            A1_rounded           = round(A1 /sum_amps , 4)
+            A2_rounded           = round(A2 /sum_amps, 4)
+            A3_rounded           = round(A3 /sum_amps, 4)
+            A4_rounded           = round(A4 /sum_amps, 4)
+            tr_rounded           = round(tr, 4)
+            BisABSLENGTH_rounded = round(BisABSLENGTH_SCALE, 4)
 
-            macName = f"{t1_rounded}"
-            outTextMac = rawTextMac.substitute(T1 = t1_rounded, T2 = t2_rounded, TR = tr_rounded, T3 = t3_rounded, T4 = t4_rounded, A1 = A1_rounded, A2 = A2_rounded, A3 = A3_rounded, A4 = A4_rounded, OUT = f"{path}/MC/{iteration}/{isotope}/{macName}")
-            outTextSh = rawTextSh.substitute(NUMEVS = NUM_EVS, MACNAME = macName, PATH=path)
+            macName = f"{isotope}{iteration}{t1_rounded}"
+            outTextMac = rawTextMac.substitute(T1 = t1_rounded, T2 = t2_rounded, TR = tr_rounded, T3 = t3_rounded, A1 = A1_rounded, A2 = A2_rounded, A3 = A3_rounded,BisScale = BisABSLENGTH_rounded, OUT = f"{path}/MC/{iteration}/{isotope}/{macName}")
+            outTextSh = rawTextSh.substitute(RUNID= runid ,NUMEVS = NUM_EVS, MACNAME = macName, PATH=path)
             outTextSubmit = rawTextSubmit.substitute(SHNAME = macName, PATH=path)
 
             # create the files 
@@ -108,7 +113,7 @@ def bisMSB_simulation():
             os.system(command)
 
 def single_parameter_scaling():
-    path      = "/data/snoplus3/hunt-stokes/tune_cleaning"
+    path      = "/data/snoplus3/weiii/tune_cleaning"
     iteration = "old_po"
     NUM_EVS = 10000
     isotope = "Po214"
@@ -166,7 +171,7 @@ def single_parameter_scaling():
         os.system(command)
 
 def doubleExponential(isotope, iteration, NUM_EVS = 666):
-    path      = "/data/snoplus3/hunt-stokes/tune_cleaning"   # PATH TO THIS DIRECTORY
+    path      = "/data/snoplus3/weiii/tune_cleaning"   # PATH TO THIS DIRECTORY
     # check the MC folder to save simulations exists
     if os.path.exists(f"{path}/MC/{isotope}/{iteration}") == False:
         # create the output folder
@@ -178,7 +183,7 @@ def doubleExponential(isotope, iteration, NUM_EVS = 666):
     # A1 = np.arange(0.50, 0.65, 0.01)  # resolution of 0.05 (9) 
     # A2 = 1 - A1
     # tr = 0.85  # kept fixed
-    
+    loop = 9 # simulate loop* 16100 events for 1 runnumber
     t1 = 4.1
     t2 = 25.0
     t3 = np.arange(95, 155, 10)#np.arange(25, 100, 10)
@@ -202,39 +207,40 @@ def doubleExponential(isotope, iteration, NUM_EVS = 666):
         rawTextSubmit = string.Template(infile.read())
 
     # loop over every combination of variables
-    for iConst1 in t3:
-        for iConst2 in t4:
-            for iConst3 in A3:
-                roundedVal1 = round(iConst1, 3)
-                roundedVal2 = round(iConst2, 3)
-                roundedVal3 = round(iConst3, 3)
-                roundedVal4 = round(0.163 - roundedVal3, 3) # A2 = 1 - A1
-                # roundedVal4 = round(0.0815, 3)
-                macName = f"{roundedVal1}_{roundedVal2}_{roundedVal3}_{roundedVal4}"  
-                outTextMac = rawTextMac.substitute(T1 = t1, T2 = t2, T3 = roundedVal1, T4 = roundedVal2, TR = tr, A1 = A1, A2 = A2, A3 = roundedVal3, A4 = roundedVal4, OUT = f"{path}/MC/{isotope}/{iteration}/{macName}")
-                outTextSh = rawTextSh.substitute(NUMEVS = NUM_EVS, MACNAME = macName, PATH = path)
-                outTextSubmit = rawTextSubmit.substitute(SHNAME = macName, PATH = path)
+    for i in range(loop): 
+        for iConst1 in t3:
+            for iConst2 in t4:
+                for iConst3 in A3:
+                    roundedVal1 = round(iConst1, 3)
+                    roundedVal2 = round(iConst2, 3)
+                    roundedVal3 = round(iConst3, 3)
+                    roundedVal4 = round(0.163 - roundedVal3, 3) # A2 = 1 - A1
+                    # roundedVal4 = round(0.0815, 3)
+                    macName = f"{roundedVal1}_{roundedVal2}_{roundedVal3}_{roundedVal4}"  
+                    outTextMac = rawTextMac.substitute(T1 = t1, T2 = t2, T3 = roundedVal1, T4 = roundedVal2, TR = tr, A1 = A1, A2 = A2, A3 = roundedVal3, A4 = roundedVal4)
+                    outTextSh = rawTextSh.substitute(NUMEVS = NUM_EVS, MACNAME = macName, PATH = path, OUT = f"{path}/MC/{isotope}/{iteration}/{macName}", ID = )
+                    outTextSubmit = rawTextSubmit.substitute(SHNAME = macName, PATH = path)
 
-                # create the files 
-                with open(f"{path}/condor/macros/" + macName + ".mac", "w") as outfile:
-                    outfile.write(outTextMac)
-                with open(f"{path}/condor/sh/" + macName + ".sh", "w") as outfile:
-                    outfile.write(outTextSh)
-                    # make it executable 
-                    os.chmod(f"{path}/condor/sh/" + macName + ".sh", 0o0777)
-                with open(f"{path}/condor/submit/" + macName + ".submit", "w") as outfile:
-                    outfile.write(outTextSubmit)
+                    # create the files 
+                    with open(f"{path}/condor/macros/" + macName + ".mac", "w") as outfile:
+                        outfile.write(outTextMac)
+                    with open(f"{path}/condor/sh/" + macName + ".sh", "w") as outfile:
+                        outfile.write(outTextSh)
+                        # make it executable 
+                        os.chmod(f"{path}/condor/sh/" + macName + ".sh", 0o0777)
+                    with open(f"{path}/condor/submit/" + macName + ".submit", "w") as outfile:
+                        outfile.write(outTextSubmit)
 
 
-                command = f"condor_submit -b {isotope}_{iteration} {path}/condor/submit/{macName}.submit"
-                os.system(command)
+                    command = f"condor_submit -b {isotope}_{iteration} {path}/condor/submit/{macName}.submit"
+                    os.system(command)
 
 def tripleExponential():
     """
     Keeping the two component time constants fixed (I am happy with the peak!) and the ratio A1/A2 fixed.
     Tuning over (t3, A3).
     """
-    path      = "/data/snoplus3/hunt-stokes/tune_cleaning"
+    path      = "/data/snoplus3/weiii/tune_cleaning"
     iteration = "t3"
     NUM_EVS = 1000
     isotope = "Po214"
@@ -300,7 +306,7 @@ def quadrupleExponential():
     Keeping the two component time constants fixed (I am happy with the peak!) and the ratio A1/A2 fixed.
     Tuning over (t3, A3).
     """
-    path      = "/data/snoplus3/hunt-stokes/tune_cleaning"
+    path      = "/data/snoplus3/weiii/tune_cleaning"
     iteration = "t4"
     NUM_EVS = 1000
     isotope = "Po214"
@@ -368,7 +374,7 @@ def high_stats_maker():
     """
     Simulate a LOT of MC with a single set of time constants to verify the agreement.
     """
-    path      = "/data/snoplus3/hunt-stokes/tune_cleaning"
+    path      = "/data/snoplus3/weiii/tune_cleaning"
     iteration = "REPROC_4Component_highStats"
     NUM_EVS  = 100
     NUM_SIMS = 1000
@@ -434,7 +440,7 @@ def riseTime():
 
     iteration = "tr_3Component"
     isotope  = "Po214"
-    path      = "/data/snoplus3/hunt-stokes/tune_cleaning"
+    path      = "/data/snoplus3/weiii/tune_cleaning"
     NUM_EVS = 1000
     
     # fixed constants from triple exponential model
@@ -481,12 +487,12 @@ def riseTime():
 parser = argparse.ArgumentParser()
 parser.add_argument('isotope', type=str, help="Valid choices are Po214 or Bi214")
 parser.add_argument('iteration', type=str, help= "what iteration of tuning -- used to name output directories")
-parser.add_argument('model', type=str, help="doubleExponential, tripleExponential, riseTime scans")
-parser.add_argument('--NUM_EVS', type=int, default=666)
+#parser.add_argument('model', type=str, help="doubleExponential, tripleExponential, riseTime scans")
+#parser.add_argument('--NUM_EVS', type=int, default=666)
 args = parser.parse_args()
 
-if args.model == "doubleExponential":
-    doubleExponential(args.isotope, args.iteration, args.NUM_EVS)
+#if args.model == "doubleExponential":
+    #doubleExponential(args.isotope, args.iteration, args.NUM_EVS)
 # doubleExponential()
 # tripleExponential()
 # quadrupleExponential()
