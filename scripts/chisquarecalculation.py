@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
 		MCindex = np.where(MC_histcounts<0.000001)[0][0]	
 		#print(( data_histcounts[:MCindex-1] - MC_histcounts[MCindex-1] )**2/MC_histcounts[MCindex-1])
-		diffs = np.sum(( data_histcounts[:MCindex-1] - MC_histcounts[MCindex-1] )**2/MC_histcounts[MCindex-1]  )
+		diffs = np.sum(( data_histcounts[:MCindex-1] - MC_histcounts[:MCindex-1] )**2/MC_histcounts[MCindex-1]  )
 		print("chisquare",diffs)
 
 		np.save(f"{outputdir}{args.iteration}/{args.parameters}.npy",diffs)

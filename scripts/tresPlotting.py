@@ -1,87 +1,91 @@
-# plot time residual for given time parameter
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Path that store the tres
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("iteration", type=str)
+parser.add_argument("parameters", type=str)
+#parser.add_argument("-o", help="output directory", type=str)
+args = parser.parse_args()
 
-def tres_hist_plot(histarray,fig,ax,color=None,label=None):
-	hist, xbins, _ = ax.hist(histarray,bins=355,range=[-5.,350.],fill = False, label =label, color = color,histtype="step", density=True,log=True)
-	return hist
-def tres_hist(histarray):
-	returnarr,binsx = np.histogram(histarray,bins=355,range=[-5.,350.])
-	SUM = np.sum(returnarr)
-	returnarr_err = returnarr**0.5/SUM
+MC_AmBe_Path   = f"/data/snoplus3/weiii/tune_cleaning/MC/{args.iteration}/AfterCutAmBe/"
+Data_AmBe_Path   = f"/home/huangp/AmBe_tres/AmBe_t_res_RAT7.0.15.npy"
+
+
+def tres_hist_plot(histarray,fig,ax,color=None,label=None,density=True):
+	#myhist, xbins = np.histogram(histarray,bins=355,range=[-5.,350.])
+	myhist, xbins = np.histogram(histarray,bins=105,range=[-5.,100.])
+	SUM = np.sum(myhist)
+	#hist, xbins,_ = ax.hist(histarray,bins=355,range=[-5.,350.],fill = False, label =label, color = color,histtype="step", density=density,log=True)
+	hist, xbins,_ = ax.hist(histarray,bins=105,range=[-5.,100.],fill = False, label =label, color = color,histtype="step", density=density,log=False)
+	return hist, SUM
+def tres_hist(histarray,density = True):
+	#returnarr,binsx = np.histogram(histarray,bins=355,range=[-5.,350.])
+	returnarr,binsx = np.histogram(histarray,bins=105,range=[-5.,100.])
+	returnarr_err = returnarr**0.5
+	if density == True: 
+		SUM = np.sum(returnarr)
+		returnarr_err = returnarr_err/SUM
+		returnarr = returnarr/SUM 
 	#print(len(returnarr))
-	return returnarr/SUM, returnarr_err, binsx
+	return returnarr, returnarr_err, binsx, SUM
 
 def Plot_1D_error(arr_x,arr_y, fig, ax,xerr,yerr,color,ylogscale = False,label=None):
-	ax.errorbar(arr_x, arr_y, xerr=xerr, yerr=yerr,color = color,label=label,linestyle="",marker='o',markersize=2)
+	ax.errorbar(arr_x, arr_y, xerr=xerr, yerr=yerr,color = color,label=label,linestyle="",marker='o',markersize=1)
 	if(ylogscale == True):
 		ax.set_yscale('log',nonposy='clip')
+def ratiodiff(MC,MC_scale,Data,Data_scale): # calculate and return the ratio diff and its uncertainty(assume poission) of two normalised arrays
+	MC_err_norm = (MC*MC_scale)**0.5/(MC_scale); Data_err_norm = (Data*Data_scale)**0.5/(Data_scale)
+	#print(np.sqrt( ( (MC_err_norm/MC)**2 )+( (Data_err_norm/Data)**2 ) ) )
+	return np.abs(MC/Data), np.sqrt( ( (MC_err_norm/MC)**2 )+( (Data_err_norm/Data)**2 ) )
+def opentxt(filename):
+	# open a txt file and return a numpy array
+	try:
+		return_list = []
+		with open(filename, 'r') as file:
+			numbers_str = file.read().strip()
+			
+			numbers_list = numbers_str.split(",")
+			for i in range(len(numbers_list)-1):
+				return_list.append(float(numbers_list[i]))
+			#print("Numbers:", return_list)
+			return np.array(return_list)
+
+	except FileNotFoundError:
+		print(f"Error: File`{filename}` not found. ")
+	except Exception as e:
+		print(f"Error: {e}")
 
 if __name__ == "__main__":
 	
-	Bitres_batch3 = np.load("/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/Batch3labppo_2p2_bismsb_Table/Bi214/5.0.npy")
-	Potres_batch3 = np.load("/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/Batch3labppo_2p2_bismsb_Table/Po214/4.1.npy")
-
-	Bitres_batch3data = np.load("/data/snoplus2/weiiiii/BiPo214_tune_cleaning/detector_data/Bi214_bismsb_batch3.npy",allow_pickle=True)
-	Potres_batch3data = np.load("/data/snoplus2/weiiiii/BiPo214_tune_cleaning/detector_data/Po214_bismsb_batch3.npy",allow_pickle=True)
-	#Bitres_batch3data = np.concatenate(Bitres_batch3data); #Potres_batch3data = np.concatenate(Potres_batch3data)
-
-
-	Bitres_batch4 = np.load("/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/Batch4labppo_2p2_bismsb_Table/Bi214/5.0.npy")
-	Potres_batch4 = np.load("/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/Batch4labppo_2p2_bismsb_Table/Po214/4.1.npy")
-
-	Bitres_batch4 = np.load("/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/Batch4labppo_2p2_bismsb_Table/Bi214/5.0.npy")
-	Potres_batch4 = np.load("/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/Batch4labppo_2p2_bismsb_Table/Po214/4.1.npy")
+	# load mc(after reconstruction)
+	MC = opentxt(f"{MC_AmBe_Path}{args.parameters}.txt")
+	Data = np.load(f"{Data_AmBe_Path}")
 	
-	Bitres_batch4data = np.load("/data/snoplus2/weiiiii/BiPo214_tune_cleaning/detector_data/bismsb_batch4_bi_4000.0.npy",allow_pickle=True)
-	Potres_batch4data = np.load("/data/snoplus2/weiiiii/BiPo214_tune_cleaning/detector_data/bismsb_batch4_po_4000.0.npy",allow_pickle=True)
-	#Bitres_batch4data = np.concatenate(Bitres_batch4data); Potres_batch3data = np.concatenate(Potres_batch4data)
-
-	# initial setup for Batch3 plots
-	fig, batch3_Biax = plt.subplots()
-	fig2,batch3_Poax = plt.subplots()
+	# *************** initial setup for Batch3 plots
+	fig, (ax, ax2)  = plt.subplots(2,1,gridspec_kw={'height_ratios': [3, 1]},  sharex = True)
 	
-	Bibatch3_hist = tres_hist_plot(Bitres_batch3,fig,batch3_Biax,'blue','MC/Bi/batch3')
-	Bibatch3_datahist, Bibatch3_datahisterr, Bibatch3binsx= tres_hist(Bitres_batch3data)
-	Bibatch3binsx = (Bibatch3binsx[1:]+Bibatch3binsx[:-1])/2.
-	Plot_1D_error(Bibatch3binsx,Bibatch3_datahist, fig, batch3_Biax,None, Bibatch3_datahisterr,'0',ylogscale = True,label="data/Bi/batch3")
+	MC_hist, MC_histerr, MCbinsx,SUM1 = tres_hist(MC)#,fig,ax,'blue',f'MC:{args.parameters}[ns]')
+	Datahist, Datahisterr, binsx, SUM1_1= tres_hist(Data)
+	binsx = (binsx[1:]+binsx[:-1])/2.
+	Plot_1D_error(binsx,MC_hist, fig, ax,None, MC_histerr,'blue',ylogscale = False,label=f'MC:{args.parameters}[ns]')
+	Plot_1D_error(binsx,Datahist, fig, ax,None, Datahisterr,'0',ylogscale = False,label="Data")
+	# calculate the diff between data/MC and plot it
+	diff, sigma_diff= ratiodiff(MC_hist,SUM1,Datahist,SUM1_1)
+	Plot_1D_error(binsx,diff, fig, ax2,None, sigma_diff,'0',ylogscale = True)
+	 
+	
 
-
-	Pobatch3_hist = tres_hist_plot(Potres_batch3,fig2,batch3_Poax,'blue','MC/po/batch3')
-	Pobatch3_datahist, Pobatch3_datahisterr, Pobatch3binsx= tres_hist(Potres_batch3data)
-	Pobatch3binsx = (Pobatch3binsx[1:]+Pobatch3binsx[:-1])/2.
-	Plot_1D_error(Pobatch3binsx,Pobatch3_datahist, fig2, batch3_Poax,None, Pobatch3_datahisterr,'0',ylogscale = True,label="data/Po/batch3")
-
-	batch3_Biax.legend()
-	batch3_Biax.set_xlabel("tres")
-	batch3_Poax.legend()
-	batch3_Poax.set_xlabel("tres")
+	ax.legend()
+	ax2.legend()
+	ax2.set_xlabel("tres")
+	ax2.set_ylabel("MC/Data")
+	plt.savefig(f"/home/huangp/grid_search_tuning/Plots/{args.iteration}/{args.parameters}_tres.png")
 	fig.show()
-	fig2.show()
+	
 
-
-	# initial setup for batch4 plot
-	fig3, batch4_Biax = plt.subplots()
-	fig4, batch4_Poax = plt.subplots()     
-	Bibatch4_hist = tres_hist_plot(Bitres_batch4,fig,batch4_Biax,'blue','MC/Bi/batch4')
-	Bibatch4_datahist, Bibatch4_datahisterr, Bibatch4binsx= tres_hist(Bitres_batch4data)
-	Bibatch4binsx = (Bibatch4binsx[1:]+Bibatch4binsx[:-1])/2.
-	Plot_1D_error(Bibatch4binsx,Bibatch4_datahist, fig, batch4_Biax,None, Bibatch4_datahisterr,'0',ylogscale = True,label="data/Bi/batch4")
-	Pobatch4_hist = tres_hist_plot(Potres_batch4,fig4,batch4_Poax,'blue','MC/po/batch4')
-	Pobatch4_datahist, Pobatch4_datahisterr, Pobatch4binsx= tres_hist(Potres_batch4data)
-	Pobatch4binsx = (Pobatch4binsx[1:]+Pobatch4binsx[:-1])/2.
-	Plot_1D_error(Pobatch4binsx,Pobatch4_datahist, fig4, batch4_Poax,None, Pobatch4_datahisterr,'    0',ylogscale = True,label="data/Po/batch4")
-
-	batch4_Biax.legend()
-	batch4_Biax.set_xlabel("tres")
-	batch4_Poax.legend()
-	batch4_Poax.set_xlabel("tres")
-	fig3.show()
-	fig4.show()
-
-# Willzard 
-	input()
+	#input()
 
 
 
