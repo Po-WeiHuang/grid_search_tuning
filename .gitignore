@@ -9,3 +9,5 @@ official_plots
 plots
 residuals
 detector_data
+*.exe
+*.root

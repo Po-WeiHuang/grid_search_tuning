@@ -69,19 +69,19 @@ if __name__ == "__main__":
 	Bibatch3_hist, SUM1 = tres_hist_plot(Bitres_batch3,fig,batch3_Biax,'blue','MC/Bi/batch3')
 	Bibatch3_datahist, Bibatch3_datahisterr, Bibatch3binsx, SUM1_1= tres_hist(Bitres_batch3data)
 	Bibatch3binsx = (Bibatch3binsx[1:]+Bibatch3binsx[:-1])/2.
-	Plot_1D_error(Bibatch3binsx,Bibatch3_datahist, fig, batch3_Biax,None, Bibatch3_datahisterr,'0',ylogscale = True,label="data/Bi/batch3")
+	Plot_1D_error(Bibatch3binsx,Bibatch3_datahist, fig, batch3_Biax,None, Bibatch3_datahisterr,'0',ylogscale = False,label="data/Bi/batch3")
 	# calculate the diff between data/MC and plot it
 	batch3Bidiff, batch3Bisigma_diff= ratiodiff(Bibatch3_hist,SUM1,Bibatch3_datahist,SUM1_1)
-	Plot_1D_error(Bibatch3binsx,batch3Bidiff, fig, Biax2,None, batch3Bisigma_diff,'0',ylogscale = True,label="Batch3 Bi")
+	Plot_1D_error(Bibatch3binsx,batch3Bidiff, fig, Biax2,None, batch3Bisigma_diff,'0',ylogscale = False,label="Batch3 Bi")
 	 
 	
 	Pobatch3_hist,SUM2 = tres_hist_plot(Potres_batch3,fig2,batch3_Poax,'blue','MC/po/batch3')
 	Pobatch3_datahist, Pobatch3_datahisterr, Pobatch3binsx, SUM2_2= tres_hist(Potres_batch3data)
 	Pobatch3binsx = (Pobatch3binsx[1:]+Pobatch3binsx[:-1])/2.
-	Plot_1D_error(Pobatch3binsx,Pobatch3_datahist, fig2, batch3_Poax,None, Pobatch3_datahisterr,'0',ylogscale = True,label="data/Po/batch3")
+	Plot_1D_error(Pobatch3binsx,Pobatch3_datahist, fig2, batch3_Poax,None, Pobatch3_datahisterr,'0',ylogscale = False,label="data/Po/batch3")
 	# calculate the diff between data/MC and plot it
 	batch3Podiff, batch3Posigma_diff= ratiodiff(Pobatch3_hist,SUM2,Pobatch3_datahist,SUM2_2)
-	Plot_1D_error(Pobatch3binsx,batch3Podiff, fig2, Poax2,None, batch3Posigma_diff,'0',ylogscale = True,label="Batch3 Po")
+	Plot_1D_error(Pobatch3binsx,batch3Podiff, fig2, Poax2,None, batch3Posigma_diff,'0',ylogscale = False,label="Batch3 Po")
 	 
 
 
@@ -106,19 +106,19 @@ if __name__ == "__main__":
 	Bibatch4_hist, SUM3 = tres_hist_plot(Bitres_batch4,fig3,batch4_Biax,'blue','MC/Bi/batch4')
 	Bibatch4_datahist, Bibatch4_datahisterr, Bibatch4binsx, SUM3_2= tres_hist(Bitres_batch4data)
 	Bibatch4binsx = (Bibatch4binsx[1:]+Bibatch4binsx[:-1])/2.
-	Plot_1D_error(Bibatch4binsx,Bibatch4_datahist, fig3, batch4_Biax,None, Bibatch4_datahisterr,'0',ylogscale = True,label="data/Bi/batch4")
+	Plot_1D_error(Bibatch4binsx,Bibatch4_datahist, fig3, batch4_Biax,None, Bibatch4_datahisterr,'0',ylogscale = False,label="data/Bi/batch4")
 	# calculate the diff between data/MC and plot it
 	batch4Bidiff, batch4Bisigma_diff= ratiodiff(Bibatch4_hist,SUM3,Bibatch4_datahist,SUM3_2)
-	Plot_1D_error(Bibatch4binsx,batch4Bidiff, fig3, Biax,None, batch4Bisigma_diff,'0',ylogscale = True,label="Batch4 Bi")
+	Plot_1D_error(Bibatch4binsx,batch4Bidiff, fig3, Biax,None, batch4Bisigma_diff,'0',ylogscale = False,label="Batch4 Bi")
 
 
 	Pobatch4_hist, SUM4 = tres_hist_plot(Potres_batch4,fig4,batch4_Poax,'blue','MC/po/batch4')
 	Pobatch4_datahist, Pobatch4_datahisterr, Pobatch4binsx, SUM4_2= tres_hist(Potres_batch4data)
 	Pobatch4binsx = (Pobatch4binsx[1:]+Pobatch4binsx[:-1])/2.
-	Plot_1D_error(Pobatch4binsx,Pobatch4_datahist, fig4, batch4_Poax,None, Pobatch4_datahisterr,'0',ylogscale = True,label="data/Po/batch4")
+	Plot_1D_error(Pobatch4binsx,Pobatch4_datahist, fig4, batch4_Poax,None, Pobatch4_datahisterr,'0',ylogscale = False,label="data/Po/batch4")
 	# calculate the diff between data/MC and plot it
 	batch4Podiff, batch4Posigma_diff= ratiodiff(Pobatch4_hist,SUM4,Pobatch4_datahist,SUM4_2)
-	Plot_1D_error(Pobatch4binsx,batch4Podiff, fig4, Poax,None, batch4Posigma_diff,'0',ylogscale = True,label="Batch4 Po")
+	Plot_1D_error(Pobatch4binsx,batch4Podiff, fig4, Poax,None, batch4Posigma_diff,'0',ylogscale = False,label="Batch4 Po")
 	 
 
 
@@ -141,7 +141,7 @@ if __name__ == "__main__":
 	Bibatch3_hist, SUM1 = tres_hist_plot(Bitres_batch3_truth,fig5,axBi5,'blue','MC/Bi/batch3')
 	Bibatch4_hist, SUM3 = tres_hist_plot(Bitres_batch4_truth,fig5,axBi5,'red', 'MC/Bi/batch4')
 	Bidiff, Bisigma_diff= ratiodiff(Bibatch3_hist,SUM1,Bibatch4_hist, SUM3)
-	Plot_1D_error(Bibatch4binsx,Bidiff, fig5, axBi5_2,None, Bisigma_diff,'0',ylogscale = True)
+	Plot_1D_error(Bibatch4binsx,Bidiff, fig5, axBi5_2,None, Bisigma_diff,'0',ylogscale = False)
 
 
 	## Po
@@ -149,7 +149,7 @@ if __name__ == "__main__":
 	Pobatch4_hist, SUM4 = tres_hist_plot(Potres_batch4_truth,fig6,axPo6,'blue','MC/po/batch4')
 	Pobatch3_hist,SUM2 = tres_hist_plot(Potres_batch3_truth,fig6,axPo6,'red','MC/po/batch3')
 	Podiff, Posigma_diff= ratiodiff(Pobatch3_hist,SUM1,Pobatch4_hist, SUM3)
-	Plot_1D_error(Pobatch4binsx,Podiff, fig6, axPo6_2,None, Posigma_diff,'0',ylogscale = True)
+	Plot_1D_error(Pobatch4binsx,Podiff, fig6, axPo6_2,None, Posigma_diff,'0',ylogscale = False)
 	
 	axBi5.legend()
 	axPo6.legend()
@@ -172,14 +172,14 @@ if __name__ == "__main__":
 	Bi_histlow, SUM1 = tres_hist_plot(Bitres_low_truth,fig7,axBi7,'blue','MC/Bi/0.1mg')
 	Bi_histhi , SUM3 = tres_hist_plot(Bitres_hi_truth ,fig7,axBi7,'red', 'MC/Bi/50mg')
 	Bidifflow_hi, Bisigma_difflow_hi= ratiodiff(Bi_histlow,SUM1,Bi_histhi, SUM3)
-	Plot_1D_error(Bibatch4binsx,Bidifflow_hi, fig7, axBi7_2,None, Bisigma_difflow_hi,'0',ylogscale = True)
+	Plot_1D_error(Bibatch4binsx,Bidifflow_hi, fig7, axBi7_2,None, Bisigma_difflow_hi,'0',ylogscale = False)
 
 	## fig8: Po
 	fig8, (axPo8, axPo8_2) = plt.subplots(2,1,gridspec_kw={'height_ratios': [3, 1]},  sharex = True)
 	Po_histlow, SUM1 = tres_hist_plot(Potres_low_truth,fig8,axPo8,'blue','MC/Po/0.1mg')
 	Po_histhi , SUM3 = tres_hist_plot(Potres_hi_truth ,fig8,axPo8,'red', 'MC/Po/50mg')
 	Podifflow_hi, Posigma_difflow_hi= ratiodiff(Po_histlow,SUM1,Po_histhi, SUM3)
-	Plot_1D_error(Pobatch4binsx,Podifflow_hi, fig8, axPo8_2,None, Posigma_difflow_hi,'0',ylogscale = True)
+	Plot_1D_error(Pobatch4binsx,Podifflow_hi, fig8, axPo8_2,None, Posigma_difflow_hi,'0',ylogscale = False)
 
 	axBi7.legend()
 	axPo8.legend()
@@ -200,14 +200,14 @@ if __name__ == "__main__":
 	Bi_histbatch4, SUM1 = tres_hist_plot(Bitres_batch4_truth,fig9,axBi9,'blue','MC/Bi/Batch4')
 	Bi_histhi , SUM3 = tres_hist_plot(Bitres_hi_truth ,fig9,axBi9,'red', 'MC/Bi/50mg')
 	Bidiff4_hi, Bisigma_diff4_hi= ratiodiff(Bi_histbatch4,SUM1,Bi_histhi, SUM3)
-	Plot_1D_error(Bibatch4binsx,Bidiff4_hi, fig9, axBi9_2,None, Bisigma_diff4_hi,'0',ylogscale = True)
+	Plot_1D_error(Bibatch4binsx,Bidiff4_hi, fig9, axBi9_2,None, Bisigma_diff4_hi,'0',ylogscale = False)
 
 	## fig10: Po
 	fig10, (axPo10, axPo10_2) = plt.subplots(2,1,gridspec_kw={'height_ratios': [3, 1]},  sharex = True)
 	Po_histbatch4, SUM1 = tres_hist_plot(Potres_batch4_truth,fig10,axPo10,'blue','MC/Po/Batch4')
 	Po_histhi , SUM3 = tres_hist_plot(Potres_hi_truth ,fig10,axPo10,'red', 'MC/Po/50mg')
 	Podiff4_hi, Posigma_diff4_hi= ratiodiff(Po_histbatch4,SUM1,Po_histhi, SUM3)
-	Plot_1D_error(Pobatch4binsx,Podiff4_hi, fig10, axPo10_2,None, Posigma_diff4_hi,'0',ylogscale = True)
+	Plot_1D_error(Pobatch4binsx,Podiff4_hi, fig10, axPo10_2,None, Posigma_diff4_hi,'0',ylogscale = False)
 
 	axBi9.legend()
 	axPo10.legend()
