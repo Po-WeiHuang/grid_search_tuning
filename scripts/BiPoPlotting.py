@@ -9,7 +9,8 @@ Hi_MCpath    = "/data/snoplus2/weiiiii/BiPo214_tune_cleaning/residuals/50mglabpp
 def tres_hist_plot(histarray,fig,ax,color=None,label=None,density=True):
 	#myhist, xbins = np.histogram(histarray,bins=355,range=[-5.,350.])
 	myhist, xbins = np.histogram(histarray,bins=105,range=[-5.,100.])
-	SUM = np.sum(myhist)
+	print(np.diff(xbins)[0])
+	SUM = np.sum(myhist) * np.diff(xbins)[0]
 	#hist, xbins,_ = ax.hist(histarray,bins=355,range=[-5.,350.],fill = False, label =label, color = color,histtype="step", density=density,log=True)
 	hist, xbins,_ = ax.hist(histarray,bins=105,range=[-5.,100.],fill = False, label =label, color = color,histtype="step", density=density,log=False)
 	return hist, SUM
@@ -18,7 +19,7 @@ def tres_hist(histarray,density = True):
 	returnarr,binsx = np.histogram(histarray,bins=105,range=[-5.,100.])
 	returnarr_err = returnarr**0.5
 	if density == True: 
-		SUM = np.sum(returnarr)
+		SUM = np.sum(returnarr)* np.diff(binsx)[0]
 		returnarr_err = returnarr_err/SUM
 		returnarr = returnarr/SUM 
 	#print(len(returnarr))
