@@ -73,7 +73,7 @@ if __name__ == "__main__":
 	Plot_1D_error(binsx,Datahist, fig, ax,None, Datahisterr,'0',ylogscale = False,label="Data")
 	# calculate the diff between data/MC and plot it
 	diff, sigma_diff= ratiodiff(MC_hist,SUM1,Datahist,SUM1_1)
-	Plot_1D_error(binsx,diff, fig, ax2,None, sigma_diff,'0',ylogscale = True)
+	Plot_1D_error(binsx,diff, fig, ax2,None, sigma_diff,'0',ylogscale = False)
 	 
 	
 

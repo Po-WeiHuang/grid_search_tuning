@@ -10,17 +10,18 @@ import argparse
 """
 4 component model. Tuning times.
 """
-def bisMSB_simulation():
+loop = int(input("num of simlation files per runid: "))
+
+def simulation():
+    #loop = 9 # simulate loop* 16100 events for 1 runnumber
     path      = "/data/snoplus3/weiii/tune_cleaning"
     iteration = args.iteration
-    NUM_EVS = 10000
-    runid = 300960
+    NUM_EVS = 16100
+    runid = 300960 
     isotope = args.isotope
-    Bis_Concentation = 0.1 # 1.7 for batch3, 2.2 for batch4
-    BisABSLENGTH_SCALE = (Bis_Concentation/5.)*0.77
 
     # load in the default macro text 
-    with open(f"{path}/condor/template_macro_{isotope}_bismsb.mac", "r") as infile:
+    with open(f"{path}/condor/template_macro_{isotope}.mac", "r") as infile:
         rawTextMac = string.Template(infile.read())
     # load in the default executable .sh 
     with open(f"{path}/condor/template_simulate.sh", "r") as infile:
@@ -28,48 +29,9 @@ def bisMSB_simulation():
     with open(f"{path}/condor/template_simulate.submit", "r") as infile:
         rawTextSubmit = string.Template(infile.read())
 
-    if isotope == "Bi214":
+    if isotope == "AmBe":
         # fixed constants from double exponential model
-        t1 = [5.0]
-        t2 = 24.5
-        t3 = 399.0
-        tr = 0.85
-        A1 = 0.656
-        A2 = 0.252
-        A3 = 0.092
-        # loop over every combination of variables
-        for iConst1 in t1:
-            sum_amps             = A1 + A2 + A3
-            t1_rounded           = round(iConst1, 4)
-            t2_rounded           = round(t2, 4)
-            t3_rounded           = round(t3, 4)
-            A1_rounded           = round(A1 /sum_amps , 4)
-            A2_rounded           = round(A2 /sum_amps, 4)
-            A3_rounded           = round(A3 /sum_amps, 4)
-            tr_rounded           = round(tr, 4)
-            BisABSLENGTH_rounded = round(BisABSLENGTH_SCALE, 4)
-
-            macName = f"{isotope}{iteration}{t1_rounded}"
-            outTextMac = rawTextMac.substitute(T1 = t1_rounded, T2 = t2_rounded, TR = tr_rounded, T3 = t3_rounded, A1 = A1_rounded, A2 = A2_rounded, A3 = A3_rounded,BisScale = BisABSLENGTH_rounded, OUT = f"{path}/MC/{iteration}/{isotope}/{macName}")
-            outTextSh = rawTextSh.substitute(RUNID= runid ,NUMEVS = NUM_EVS, MACNAME = macName, PATH=path)
-            outTextSubmit = rawTextSubmit.substitute(SHNAME = macName, PATH=path)
-
-            # create the files 
-            with open(f"{path}/condor/macros/" + macName + ".mac", "w") as outfile:
-                outfile.write(outTextMac)
-            with open(f"{path}/condor/sh/" + macName + ".sh", "w") as outfile:
-                outfile.write(outTextSh)
-                # make it executable 
-                os.chmod(f"{path}/condor/sh/" + macName + ".sh", 0o0777)
-            with open(f"{path}/condor/submit/" + macName + ".submit", "w") as outfile:
-                outfile.write(outTextSubmit)
-
-
-            command = f"condor_submit -b {isotope}_{iteration}_bismsb {path}/condor/submit/{macName}.submit"
-            os.system(command)
-    if isotope == "Po214":
-        # fixed constants from double exponential model
-        t1 = [4.1]
+        t1 = np.arange(2.5,5.1,0.1)
         t2 = 21.0
         t3 = 84.0
         t4 = 197.0
@@ -78,40 +40,39 @@ def bisMSB_simulation():
         A2 = 0.303
         A3 = 0.070
         A4 = 0.104
-
         # loop over every combination of variables
-        for iConst1 in t1:
-            sum_amps = A4 + A1 + A2 + A3
-            t1_rounded           = round(iConst1, 4)
-            t2_rounded           = round(t2, 4)
-            t3_rounded           = round(t3, 4)
-            t4_rounded           = round(t4, 4)
-            A1_rounded           = round(A1 /sum_amps , 4)
-            A2_rounded           = round(A2 /sum_amps, 4)
-            A3_rounded           = round(A3 /sum_amps, 4)
-            A4_rounded           = round(A4 /sum_amps, 4)
-            tr_rounded           = round(tr, 4)
-            BisABSLENGTH_rounded = round(BisABSLENGTH_SCALE, 4)
+        for i in range(loop):
+            for iConst1 in t1:
+                sum_amps             = A1 + A2 + A3 + A4
+                t1_rounded           = round(iConst1, 4)
+                t2_rounded           = round(t2, 4)
+                t3_rounded           = round(t3, 4)
+                t4_rounded           = round(t4, 4)
+                A1_rounded           = round(A1  , 4)
+                A2_rounded           = round(A2 , 4)
+                A3_rounded           = round(A3 , 4)
+                A4_rounded           = round(A4 , 4)
+                tr_rounded           = round(tr, 4)
 
-            macName = f"{isotope}{iteration}{t1_rounded}"
-            outTextMac = rawTextMac.substitute(T1 = t1_rounded, T2 = t2_rounded, TR = tr_rounded, T3 = t3_rounded, A1 = A1_rounded, A2 = A2_rounded, A3 = A3_rounded,BisScale = BisABSLENGTH_rounded, OUT = f"{path}/MC/{iteration}/{isotope}/{macName}")
-            outTextSh = rawTextSh.substitute(RUNID= runid ,NUMEVS = NUM_EVS, MACNAME = macName, PATH=path)
-            outTextSubmit = rawTextSubmit.substitute(SHNAME = macName, PATH=path)
+                macName = f"{t1_rounded}_{i}th_"  
+                outTextMac = rawTextMac.substitute(T1 = t1_rounded, T2 = t2_rounded, TR = tr_rounded, T3 = t3_rounded,T4 = t4_rounded, A1 = A1_rounded, A2 = A2_rounded, A3 = A3_rounded,A4 = A4_rounded)
+                outTextSh = rawTextSh.substitute(ITERATION =iteration, RUNID = runid, MACNAME = macName, PATH = path, OUT = f"{path}/MC/{iteration}/{macName}", ID = i)
+                outTextSubmit = rawTextSubmit.substitute(ITERATION = iteration,SHNAME = macName, PATH=path)
 
-            # create the files 
-            with open(f"{path}/condor/macros/" + macName + ".mac", "w") as outfile:
-                outfile.write(outTextMac)
-            with open(f"{path}/condor/sh/" + macName + ".sh", "w") as outfile:
-                outfile.write(outTextSh)
-                # make it executable 
-                os.chmod(f"{path}/condor/sh/" + macName + ".sh", 0o0777)
-            with open(f"{path}/condor/submit/" + macName + ".submit", "w") as outfile:
-                outfile.write(outTextSubmit)
+                # create the files 
+                with open(f"{path}/condor/macros/{iteration}/" + macName + ".mac", "w") as outfile:
+                    outfile.write(outTextMac)
+                with open(f"{path}/condor/sh/{iteration}/" + macName + ".sh", "w") as outfile:
+                    outfile.write(outTextSh)
+                    # make it executable 
+                    os.chmod(f"{path}/condor/sh/{iteration}/" + macName + ".sh", 0o0777)
+                with open(f"{path}/condor/submit/{iteration}/" + macName + ".submit", "w") as outfile:
+                    outfile.write(outTextSubmit)
 
 
-            command = f"condor_submit -b {isotope}_{iteration}_bismsb {path}/condor/submit/{macName}.submit"
-            os.system(command)
-
+                command = f"condor_submit -b {isotope}_{iteration} {path}/condor/submit/{iteration}/{macName}.submit"
+                os.system(command)
+    
 def single_parameter_scaling():
     path      = "/data/snoplus3/weiii/tune_cleaning"
     iteration = "old_po"
@@ -218,7 +179,7 @@ def doubleExponential(isotope, iteration, NUM_EVS = 666):
                     # roundedVal4 = round(0.0815, 3)
                     macName = f"{roundedVal1}_{roundedVal2}_{roundedVal3}_{roundedVal4}"  
                     outTextMac = rawTextMac.substitute(T1 = t1, T2 = t2, T3 = roundedVal1, T4 = roundedVal2, TR = tr, A1 = A1, A2 = A2, A3 = roundedVal3, A4 = roundedVal4)
-                    outTextSh = rawTextSh.substitute(NUMEVS = NUM_EVS, MACNAME = macName, PATH = path, OUT = f"{path}/MC/{isotope}/{iteration}/{macName}", ID = )
+                    outTextSh = rawTextSh.substitute(NUMEVS = NUM_EVS, MACNAME = macName, PATH = path, OUT = f"{path}/MC/{isotope}/{iteration}/{macName}", ID = i)
                     outTextSubmit = rawTextSubmit.substitute(SHNAME = macName, PATH = path)
 
                     # create the files 
@@ -500,4 +461,4 @@ args = parser.parse_args()
 # riseTime()
 # single_parameter_scaling()
 # high_stats_maker()
-bisMSB_simulation()
+simulation()
