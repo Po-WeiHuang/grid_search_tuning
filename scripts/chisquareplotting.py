@@ -4,7 +4,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.font_manager as fm
 
-t1 = np.arange(2.5,5.1,0.1)
+t1 = np.arange(50.0,120.0,2.0)#np.arange(2.5,5.1,0.1)
 t1 = np.round(t1,1)
 
 def setup_plot_style():
@@ -27,7 +27,7 @@ def setup_plot_style():
     font_filepath = "/home/hunt-stokes/LiberationSerif-Regular.ttf"
 
     return fm.FontProperties(fname=font_filepath, size=28)
-schisquarenpyfilepath = "/data/snoplus3/weiii/tune_cleaning/chi2/t1_2_5/"
+schisquarenpyfilepath = "/data/snoplus3/weiii/tune_cleaning/chi2/t3_50_120/"
 if __name__ == "__main__":
 # load the data set
     setup_plot_style()
@@ -44,6 +44,7 @@ if __name__ == "__main__":
     ax.scatter(Parameters,np.array(dataset),color="b",marker="o")
     ax.axvline(x=4.1, ymin=0, ymax=1,color="r",label="Current RAT value: 4.1 ns")
     ax.set_xlabel("Emission Time Const(t1) (ns)")
+    #ax.set_ylim(7e-05,1e-04)
     ax.set_ylabel(r"$\sum\frac{(Data-Model)^{2}}{Model}$")
     ax.legend()
     fig.show()

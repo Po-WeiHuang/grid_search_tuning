@@ -6,7 +6,7 @@ import os
 # combined all the simulation results of same tuning time, to calculating chisquare with data
 
 # parameters that need to be changed
-t1 = np.arange(2.5,5.1,0.1)
+t1 = np.arange(50.0,120.0,2.0)#np.arange(2.5,5.1,0.1)
 loop = int(input("num of simlation files per runid: "))
 
 
@@ -59,8 +59,8 @@ def chisquarecalc():
 
 			MCindex = np.where(Norm_MC_histcounts<0.000001)[0][0]	
 			#print(( data_histcounts[:MCindex-1] - MC_histcounts[MCindex-1] )**2/MC_histcounts[MCindex-1])
-			#diffs = np.sum(( data_histcounts[:MCindex-1] - MC_histcounts[:MCindex-1] )**2 )
-			diffs = np.sum(( Norm_data_histcounts[:MCindex-1] - Norm_MC_histcounts[:MCindex-1] )**2/Norm_MC_histcounts_err[:MCindex-1]**2  )
+			diffs = np.sum(( Norm_data_histcounts[:MCindex-1] - Norm_MC_histcounts[:MCindex-1] )**2/ Norm_MC_histcounts[:MCindex-1])
+			#diffs = np.sum(( Norm_data_histcounts[:MCindex-1] - Norm_MC_histcounts[:MCindex-1] )**2/Norm_MC_histcounts_err[:MCindex-1]**2  )
 			print("chisquare",diffs)
 
 			np.save(f"{outputdir}/{args.iteration}/{parameters[iConst1]}.npy",diffs)
