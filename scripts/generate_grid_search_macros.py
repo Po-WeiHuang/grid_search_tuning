@@ -30,7 +30,7 @@ def bisMSB_simulation():
 
     if isotope == "Bi214":
         # fixed constants from double exponential model
-        t1 = [5.0]
+        t1 = np.arange(2.5,7.5,0.1)#[5.0]
         t2 = 24.5
         t3 = 399.0
         tr = 0.85
