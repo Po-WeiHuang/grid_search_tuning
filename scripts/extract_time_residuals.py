@@ -29,7 +29,7 @@ def extractAnalysis(parameters, iteration, isotope, FV_CUT, zOffset, ENERGY_LOW,
     #iteration = "initial_config"
     if isotope == "Po214" or "Bi214":
         # Doubled the stats by adding additional file which has {parameters}2.root suffix 
-        fname = f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/MC/{iteration}/{isotope}/{isotope}{iteration}{parameters}.root"
+        fname = f"/data/snoplus2/weiiiii/BiPo214_tune_cleaning/MC/{iteration}/{isotope}/{isotope}{parameters}.root"
     else:
         raise Exception("Wrong filename/path, check your [iteration] & [isotope] & [parameters]")
     # fname = f"/data/snoplus3/hunt-stokes/tune_cleaning/MC/{isotope}/{iteration}/{parameters}*.root"
