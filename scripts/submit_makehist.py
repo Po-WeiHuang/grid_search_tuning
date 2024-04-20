@@ -5,7 +5,7 @@ from ROOT import RAT
 import argparse
 import os 
 import string 
-
+import time
 
 
 def GetFile(filedir): #return all of the file(.root) + originalfilename in that dir
@@ -19,7 +19,7 @@ def GetFile(filedir): #return all of the file(.root) + originalfilename in that 
 	return file_addresses, name
 def t1scaling():
 	# parameters that need to be changed
-	t1 = np.arange(1.0,7.6,0.1)#np.arange(2.0,7.1,0.1)np.arange(2.5,5.1,0.1)
+	t1 = np.arange(15.0,35.0,0.2)#np.arange(2.0,7.1,0.1)np.arange(2.5,5.1,0.1)
 	t1 = np.round(t1,1)
 	path          = "/data/snoplus2/weiiiii/BiPo214_tune_cleaning"
 	histcondorpath  = "/data/snoplus2/weiiiii/BiPo214_tune_cleaning/makehistcondor"
@@ -77,6 +77,7 @@ def t1scaling():
 		print(f"condor_submit -b {isotope}_{iteration}_makehist {histcondorpath}/submit/{iteration}/{macName}.submit")
 		command = f"condor_submit -b {isotope}_{iteration}_makehist {histcondorpath}/submit/{iteration}/{macName}.submit"
 		os.system(command)
+		time.sleep(1)
 def genermc():
 	path          = "/data/snoplus3/weiii/tune_cleaning"
 	mcpath1          = "/data/snoplus3/SNOplusData/production/Prod_RAT-7.0.15_AmBe_Feb2023/"

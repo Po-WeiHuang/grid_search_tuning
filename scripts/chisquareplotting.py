@@ -5,7 +5,7 @@ matplotlib.use("Agg")
 import matplotlib.font_manager as fm
 import argparse
 
-t1 = np.arange(2.5,7.6,0.1)#np.arange(2.0,7.1,0.1)
+t1 = np.arange(10.0,30.0,0.2)#np.arange(15.0,35.0,0.2)
 t1 = np.round(t1,1)
 
 def setup_plot_style():
@@ -56,9 +56,10 @@ if __name__ == "__main__":
 	min_index = np.where(np.array(dataset) == np.min(np.array(dataset)))[0][0]
 	print(f"chi2 minimum is at t = {par[min_index]}, with chi2 = {dataset[min_index]}")
 	ax.scatter(np.array(par),np.array(dataset),color="b",marker="o")
-	t1_now = 5.0 if args.isotope == "Bi214" else 4.1
+	t1_now = 5.0 if args.isotope == "Bi214" else 21.0 #4.1
 	ax.axvline(x=t1_now, ymin=0, ymax=1,color="r",label=f"Current RAT value: {t1_now} ns")
-	ax.set_xlabel("Emission Time Const(t1) (ns)")
+	#ax.set_xlabel("Emission Time Const(t1) (ns)")
+	ax.set_xlabel("Emission Time Const(t2) (ns)")
 	#ax.set_ylim(7e-05,1e-04)
 	ax.set_ylabel(r"$\sum\frac{(Data-Model)^{2}}{\sigma_{Model}^2}$")
 	ax.legend()

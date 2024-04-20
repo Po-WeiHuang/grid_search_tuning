@@ -1,7 +1,7 @@
 """
 Script generates all the individual macros, sh and submit files for the Bi214 timing tuning.
 """
-
+import time
 import string 
 import os 
 import numpy as np
@@ -47,18 +47,18 @@ def bisMSB_simulation():
 
 	if isotope == "Bi214":
 		# fixed constants from double exponential model
-		t1 = np.arange(1.0,7.5,0.1)#[5.0]
-		t2 = 24.5
+		t1 = 5.3
+		t2 = np.arange(7.0,15.2,0.2)
 		t3 = 399.0
 		tr = 0.85
 		A1 = 0.656
 		A2 = 0.252
 		A3 = 0.092
 		# loop over every combination of variables
-		for iConst1 in t1:
+		for iConst1 in t2:
 			sum_amps             = A1 + A2 + A3
-			t1_rounded           = round(iConst1, 4)
-			t2_rounded           = round(t2, 4)
+			t1_rounded           = round(t1, 4)
+			t2_rounded           = round(iConst1, 4)
 			t3_rounded           = round(t3, 4)
 			A1_rounded           = round(A1 /sum_amps , 4)
 			A2_rounded           = round(A2 /sum_amps, 4)
@@ -66,7 +66,7 @@ def bisMSB_simulation():
 			tr_rounded           = round(tr, 4)
 			BisABSLENGTH_rounded = round(BisABSLENGTH_SCALE, 4)
 
-			macName = f"{isotope}{t1_rounded}"
+			macName = f"{isotope}{t2_rounded}"
 			outTextMac = rawTextMac.substitute(T1 = t1_rounded, T2 = t2_rounded, TR = tr_rounded, T3 = t3_rounded, A1 = A1_rounded, A2 = A2_rounded, A3 = A3_rounded,BisScale = BisABSLENGTH_rounded, OUT = f"{path}/MC/{iteration}/{isotope}/{macName}")
 			outTextSh = rawTextSh.substitute(RUNID= runid ,ITERATION= iteration,NUMEVS = NUM_EVS, MACNAME = macName, PATH=path)
 			outTextSubmit = rawTextSubmit.substitute(SHNAME = macName,ITERATION= iteration, PATH=path)
@@ -84,10 +84,11 @@ def bisMSB_simulation():
 
 			command = f"condor_submit -b {isotope}_{iteration}_bismsb {path}/condor/submit/{iteration}/{macName}.submit"
 			os.system(command)
+			time.sleep(1)
 	if isotope == "Po214":
 		# fixed constants from double exponential model
-		t1 = np.arange(1.0,7.5,0.1)#[4.1]
-		t2 = 21.0
+		t1 = 4.9
+		t2 = np.arange(10.0,30.1,0.2)#
 		t3 = 84.0
 		t4 = 197.0
 		tr = 0.85
@@ -97,10 +98,10 @@ def bisMSB_simulation():
 		A4 = 0.104
 
 		# loop over every combination of variables
-		for iConst1 in t1:
+		for iConst1 in t2:
 			sum_amps = A4 + A1 + A2 + A3
-			t1_rounded           = round(iConst1, 4)
-			t2_rounded           = round(t2, 4)
+			t1_rounded           = round(t1, 4)
+			t2_rounded           = round(iConst1, 4)
 			t3_rounded           = round(t3, 4)
 			t4_rounded           = round(t4, 4)
 			A1_rounded           = round(A1 /sum_amps , 4)
@@ -110,7 +111,7 @@ def bisMSB_simulation():
 			tr_rounded           = round(tr, 4)
 			BisABSLENGTH_rounded = round(BisABSLENGTH_SCALE, 4)
 
-			macName = f"{isotope}{t1_rounded}"
+			macName = f"{isotope}{t2_rounded}"
 			outTextMac = rawTextMac.substitute(T1 = t1_rounded, T2 = t2_rounded, TR = tr_rounded, T3 = t3_rounded, A1 = A1_rounded, A2 = A2_rounded, A3 = A3_rounded,BisScale = BisABSLENGTH_rounded, OUT = f"{path}/MC/{iteration}/{isotope}/{macName}")
 			outTextSh = rawTextSh.substitute(RUNID= runid ,ITERATION= iteration, NUMEVS = NUM_EVS, MACNAME = macName, PATH=path)
 			outTextSubmit = rawTextSubmit.substitute(SHNAME = macName, ITERATION=iteration, PATH=path)
@@ -128,6 +129,7 @@ def bisMSB_simulation():
 
 			command = f"condor_submit -b {isotope}_{iteration}_bismsb {path}/condor/submit/{iteration}/{macName}.submit"
 			os.system(command)
+			time.sleep(1)
 
 def single_parameter_scaling():
 	path      = "/data/snoplus3/hunt-stokes/tune_cleaning"
