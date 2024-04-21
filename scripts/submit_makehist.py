@@ -19,7 +19,7 @@ def GetFile(filedir): #return all of the file(.root) + originalfilename in that 
 	return file_addresses, name
 def t1scaling():
 	# parameters that need to be changed
-	t1 = np.arange(15.0,35.0,0.2)#np.arange(2.0,7.1,0.1)np.arange(2.5,5.1,0.1)
+	t1 = np.arange(7.0,15.2,0.2)#np.arange(2.0,7.1,0.1)np.arange(2.5,5.1,0.1)
 	t1 = np.round(t1,1)
 	path          = "/data/snoplus2/weiiiii/BiPo214_tune_cleaning"
 	histcondorpath  = "/data/snoplus2/weiiiii/BiPo214_tune_cleaning/makehistcondor"

@@ -19,15 +19,15 @@ datafilename 	= "bismsb_batch4_bi_4000.0.npy" if args.isotope == "Bi214" else "b
 Data_Path       = datapath+datafilename
 
 def tres_hist_plot(histarray,fig,ax,color=None,label=None,density=True):
-	#myhist, xbins = np.histogram(histarray,bins=355,range=[-5.,350.])
-	myhist, xbins = np.histogram(histarray,bins=105,range=[-5.,100.])
+	myhist, xbins = np.histogram(histarray,bins=355,range=[-5.,350.])
+	#myhist, xbins = np.histogram(histarray,bins=105,range=[-5.,100.])
 	SUM = np.sum(myhist)
-	#hist, xbins,_ = ax.hist(histarray,bins=355,range=[-5.,350.],fill = False, label =label, color = color,histtype="step", density=density,log=True)
-	hist, xbins,_ = ax.hist(histarray,bins=105,range=[-5.,100.],fill = False, label =label, color = color,histtype="step", density=density,log=False)
+	hist, xbins,_ = ax.hist(histarray,bins=355,range=[-5.,350.],fill = False, label =label, color = color,histtype="step", density=density,log=True)
+	#hist, xbins,_ = ax.hist(histarray,bins=105,range=[-5.,100.],fill = False, label =label, color = color,histtype="step", density=density,log=False)
 	return hist, SUM
 def tres_hist(histarray,density = True):
-	#returnarr,binsx = np.histogram(histarray,bins=355,range=[-5.,350.])
-	returnarr,binsx = np.histogram(histarray,bins=105,range=[-5.,100.])
+	returnarr,binsx = np.histogram(histarray,bins=355,range=[-5.,350.])
+	#returnarr,binsx = np.histogram(histarray,bins=105,range=[-5.,100.])
 	returnarr_err = returnarr**0.5
 	if density == True: 
 		SUM = np.sum(returnarr)
@@ -59,7 +59,7 @@ def GetFile(filedir): #return all of the file(.root) + originalfilename in that 
 	return file_addresses, name
 
 def plot_varyingt1():
-	t1 			= np.arange(10.0,30.0,0.2)#np.arange(1.0,7.5,0.1)#np.arange(2.5,7.5,0.1)
+	t1 			= np.arange(8.0,35.0,0.2)#np.arange(1.0,7.5,0.1)#np.arange(2.5,7.5,0.1)
 	parameters = np.round(t1,1)
 	try:
 		os.mkdir(f"{outputdir}/{args.iteration}")
@@ -84,8 +84,8 @@ def plot_varyingt1():
 		MC_hist, MC_histerr, MCbinsx,SUM1 = tres_hist(MC)#,fig,ax,'blue',f'MC:{args.parameters}[ns]')
 		Datahist, Datahisterr, binsx, SUM1_1= tres_hist(Data)
 		binsx = (binsx[1:]+binsx[:-1])/2.
-		Plot_1D_error(binsx,MC_hist, fig, ax,None, MC_histerr,'blue',ylogscale = False,label=f'MC:{parameters[iConst1]}[ns]')
-		Plot_1D_error(binsx,Datahist, fig, ax,None, Datahisterr,'0',ylogscale = False,label="Data")
+		Plot_1D_error(binsx,MC_hist, fig, ax,None, MC_histerr,'blue',ylogscale = True,label=f'MC:{parameters[iConst1]}[ns]')
+		Plot_1D_error(binsx,Datahist, fig, ax,None, Datahisterr,'0',ylogscale = True,label="Data")
 		# calculate the diff between data/MC and plot it
 		diff, sigma_diff= ratiodiff(MC_hist,SUM1,Datahist,SUM1_1)
 		Plot_1D_error(binsx,diff, fig, ax2,None, sigma_diff,'0',ylogscale = False)
@@ -97,8 +97,8 @@ def plot_varyingt1():
 		ax2.set_xlabel("tres")
 		ax2.set_ylabel("MC/Data")
 		ax2.set_ylim(0.6,1.4)
-		plt.savefig(f"{outputdir}/{args.iteration}/{args.isotope}/{parameters[iConst1]}_tres.png")
-		#plt.savefig(f"{outputdir}/{args.iteration}/{args.isotope}/log{parameters[iConst1]}_tres.png")
+		#plt.savefig(f"{outputdir}/{args.iteration}/{args.isotope}/{parameters[iConst1]}_tres.png")
+		plt.savefig(f"{outputdir}/{args.iteration}/{args.isotope}/log{parameters[iConst1]}_tres.png")
 		#fig.show()
 		#input()
 	

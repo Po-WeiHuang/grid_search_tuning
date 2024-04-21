@@ -6,7 +6,7 @@ import os
 # combined all the simulation results of same tuning time, to calculating chisquare with data
 
 # parameters that need to be changed
-t1 = np.arange(10.0,30.0,0.2)#np.arange(15.0,35.0,0.2)
+t1 = np.arange(10.0,30.0,0.2)#np.arange(8.0,35.0,0.2)
 
 
 
@@ -21,7 +21,7 @@ def chisquarecalc():
 	outputdir = "/data/snoplus2/weiiiii/BiPo214_tune_cleaning/chi2"
 	binning = np.arange(-5,350,1)
 	parameters = np.round(t1,1)
-	if(args.isotope == "Bi214" or args.isotope == "Po214"):
+	if(isotope == "Bi214" or isotope == "Po214"):
 		try:
 			os.mkdir(f"{outputdir}/{args.iteration}")
 			os.chmod(f"{outputdir}/{args.iteration}", 0o0777)
@@ -33,6 +33,8 @@ def chisquarecalc():
 		except:
 			print(f"directory:{outputdir}{args.iteration}/{isotope} already exists")
 		data_arr  = np.load(datapath+datafilename, allow_pickle=True)
+
+		min_chi2 = 999999; min_chi2arr = 0; min_chi2_tresbin = 0
 		for iConst1 in range(len(parameters)):
 			MC_arr = []
 			try:
@@ -51,12 +53,22 @@ def chisquarecalc():
 			
 			MCindex = np.where(Norm_MC_histcounts<0.00001)[0][0]	
 			#print(( data_histcounts[:MCindex-1] - MC_histcounts[MCindex-1] )**2/MC_histcounts[MCindex-1])
+			chi2arr = ( Norm_data_histcounts[:MCindex-1] - Norm_MC_histcounts[:MCindex-1] )**2/((Norm_MC_histcounts_err[:MCindex-1]**2 + Norm_Data_histcounts_err[:MCindex-1]**2)  )
 			#diffs = np.sum(( Norm_data_histcounts[:MCindex-1] - Norm_MC_histcounts[:MCindex-1] )**2/ Norm_MC_histcounts[:MCindex-1])
-			diffs = np.sum(( Norm_data_histcounts[:MCindex-1] - Norm_MC_histcounts[:MCindex-1] )**2/((Norm_MC_histcounts_err[:MCindex-1]**2 + Norm_Data_histcounts_err[:MCindex-1]**2)  ))
+			diffs = np.sum(chi2arr)
 			print("chisquare",diffs)
 
 			np.save(f"{outputdir}/{args.iteration}/{isotope}/{parameters[iConst1]}.npy",diffs)
-		
+
+			if  diffs < min_chi2:
+				min_chi2    	 = diffs
+				min_chi2arr 	 = chi2arr
+				min_chi2_tresbin = binning[:MCindex-1]
+		print(f"The minimum chi2 is {min_chi2}")
+		np.save(f"{isotope}_minchi2arr.npy",min_chi2arr)
+		np.save(f"{isotope}_nonchi2bins.npy",min_chi2_tresbin)
+
+				
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("iteration", type=str)

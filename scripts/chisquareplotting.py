@@ -56,7 +56,7 @@ if __name__ == "__main__":
 	min_index = np.where(np.array(dataset) == np.min(np.array(dataset)))[0][0]
 	print(f"chi2 minimum is at t = {par[min_index]}, with chi2 = {dataset[min_index]}")
 	ax.scatter(np.array(par),np.array(dataset),color="b",marker="o")
-	t1_now = 5.0 if args.isotope == "Bi214" else 21.0 #4.1
+	t1_now = 24.46 if args.isotope == "Bi214" else 21.0 #4.1
 	ax.axvline(x=t1_now, ymin=0, ymax=1,color="r",label=f"Current RAT value: {t1_now} ns")
 	#ax.set_xlabel("Emission Time Const(t1) (ns)")
 	ax.set_xlabel("Emission Time Const(t2) (ns)")
